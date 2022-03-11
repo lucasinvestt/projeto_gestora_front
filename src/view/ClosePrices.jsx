@@ -1,37 +1,30 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Table } from 'react-bootstrap';
+import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getClosePricesFromDate } from '../api/api';
 import ConfirmActionModal from '../components/ConfirmActionModal';
 
 import TitleWithBackButton from '../components/TitleWithBackButton';
+import { getFormatedDate } from '../scripts/helper_scripts';
 
 const ClosePrices = () => {
     const [closePrices, setClosePrices] = useState([])
-    const [date, setDate] = useState(new Date())
-    const {id} = useParams();
+    const [date, setDate] = useState(getFormatedDate(new Date()))
     const filterDate = new Date(useParams().date);
     const navigate = useNavigate();
 
     useEffect(() => {
-        let url = 'http://localhost:3000/close_prices/';
-        
-        // if (id !== undefined) {
-        //     //edit close price
-        //     url = `http://localhost:3000/close_prices/${id}`;
-        //     axios.get(url)
-        //     .then(res => {
-        //         console.log('close prices');
-        //         console.log(res);
-        //         setClosePrices(res.data);
-        //     })
-        // }
+        let formatedFilterDate;
 
-        axios.get(url)
+        if (filterDate != 'Invalid Date') {
+            formatedFilterDate = getFormatedDate(new Date(filterDate))
+            setDate(formatedFilterDate)
+        }
+
+        getClosePricesFromDate(getFormatedDate(filterDate))
         .then(res => {
-            console.log('close prices');
-            console.log(res);
-            setClosePrices(res.data);
+            setClosePrices(res.data)
         })
 
     }, []);
@@ -42,6 +35,7 @@ const ClosePrices = () => {
 
     function filterByDate() {
         window.location.href = `http://localhost:7090/close_prices/${date}`;
+        // navigate(`/close_prices/${date}`)
     }
 
 
@@ -90,38 +84,44 @@ const ClosePrices = () => {
 
             <br />
             <div className="input-group">
-                <input onChange={onDateChange} type="date"></input><br />
+                <input value={date} onChange={onDateChange} type="date"></input><br />
                 <div className="input-group-append">
                     <button className="btn btn-outline-secondary" type="button" onClick={filterByDate}>Confirmar</button>
                 </div>
             </div>
             <br />
 
-            <h3>Falta fazer filtro por data no backend</h3>
-            <Table className='table table-striped'>
-                <thead>
-                    <tr>
-                        <th>Ativo</th>
-                        <th>Valor de Fechamento</th>
-                        <th>Data</th>
-                        <th>Gerenciar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {closePrices.map( (item, idx) => {
-                        return <tr key={idx}>
-                            {/* <td>{item.security_id}</td> */}
-                            <td>{item.security.symbol}</td>
-                            <td>R$ {item.value.toLocaleString('pt-br')}</td>
-                            <td>{item.date.toLocaleString('pt-br')}</td>
-                            <td>
-                                <Button className='me-2' onClick={() => goToEditClosePrice(item.id)}>Editar</Button><span></span>
-                                <Button onClick={() => confirmationModal(item.id)} className='btn btn-danger'>Excluir</Button>
-                            </td>
+            {
+                closePrices.length === 0 ?
+                <Row><Col><p>Nenhum preço de fechamento registrado para o dia selecionado</p></Col></Row>
+                :
+                <Table className='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th>Ativo</th>
+                            <th>Valor de Fechamento</th>
+                            <th>Data</th>
+                            <th>Gerenciar</th>
                         </tr>
-                    })}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {closePrices.map( (item, idx) => {
+                            return <tr key={idx}>
+                                {/* <td>{item.security_id}</td> */}
+                                <td>{item.security.symbol}</td>
+                                <td>R$ {item.value.toLocaleString('pt-br')}</td>
+                                <td>{item.date.toLocaleString('pt-br')}</td>
+                                <td>
+                                    <Button className='me-2' onClick={() => goToEditClosePrice(item.id)}>Editar</Button><span></span>
+                                    <Button onClick={() => confirmationModal(item.id)} className='btn btn-danger'>Excluir</Button>
+                                </td>
+                            </tr>
+                        })}
+                    </tbody>
+                </Table>
+
+            }
+
 
             <ConfirmActionModal 
                 show={show}

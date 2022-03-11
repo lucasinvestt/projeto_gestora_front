@@ -4,11 +4,8 @@ export const investTechApi = axios.create({
     baseURL: 'http://localhost:3000/'
 });
 
-//securities
-export async function getSecuritiesList() {
-    return investTechApi.get('/securities');
-}
 
+//Security transactions
 export async function getSecurityTransaction(transactionId) {
     return investTechApi.get(`/security_transactions/${transactionId}`)
 }
@@ -20,6 +17,55 @@ export async function getSecurityTransactionsFromFund(fundId, date) {
 export async function updateSecurityTransaction(transactionId, updates) {
     return investTechApi.patch(`/security_transactions/${transactionId}`, updates)
 }
+
+export async function deleteSecurityTransaction(id) {
+    return investTechApi.delete(`/security_transactions/${id}`)
+}
+
+export async function getAllSecurityTransactionsFromDate(date) {
+    return investTechApi.get(`/security_transactions/all/${date}`)
+}
+
+export async function getAllSecurityTransactions() {
+    return investTechApi.get(`/security_transactions/`);
+}
+
+
+//Securities
+export async function getSecuritiesList() {
+    return investTechApi.get('/securities');
+}
+
+export async function deleteSecurity(id) {
+    return investTechApi.delete(`/securities/${id}`);
+}
+
+export async function getSecurity(id) {
+    return investTechApi.get(`/securities/${id}`);
+}
+
+export async function createSecurity(data) {
+    return investTechApi.post(`/securities/`, data);
+}
+
+export async function updateSecurity(id, data) {
+    return investTechApi.patch(`/securities/${id}`, data)
+}
+
+
+//close prices
+export async function getClosePrices() {
+    return investTechApi.get(`/close_prices/`);
+}
+
+export async function getClosePricesFromDate(date) {
+    return investTechApi.get(`/close_prices/all/${date}`);
+}
+
+export async function getClosePrice(id) {
+    return investTechApi.get(`/close_prices/${id}`); 
+}
+
 
 //cash transactions
 export async function getCashTransactionsList() {
@@ -41,6 +87,9 @@ export async function updateCashTransaction(transactionId, updates) {
 export async function deleteCashTransaction(transactionId) {
     return investTechApi.delete(`/cash_transactions/${transactionId}`);
 }
+
+
+
 
 //pl
 export async function getPL(fundId, date) {

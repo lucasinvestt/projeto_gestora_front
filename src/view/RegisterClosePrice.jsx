@@ -1,13 +1,19 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Container, Button, Toast } from 'react-bootstrap';
+import { Container, Button, Toast, Form } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { getClosePrice } from '../api/api';
 import TitleWithBackButton from '../components/TitleWithBackButton';
+
+import Select from 'react-select'
 
 const RegisterClosePrice = () => {
     const [selectedSecurityId, setSelectedSecurityId] = useState(-1);
     const [closePrice, setClosePrice] = useState(0);
     const [securitiesList, setSecuritiesList] = useState([]);
+    const [securitySymbol, setSecuritySymbol] = useState('');
+
+    const [selectedSecurity, setSelectedSecurity] = useState({});
 
     const {id} = useParams();
 
@@ -19,20 +25,19 @@ const RegisterClosePrice = () => {
     const [toastVariant, setToastVariant] = useState('success');
 
 
+    const selectOptions = securitiesList.map(item => {return {value: item.id, label: item.symbol}});
+
     useEffect(() => {
         if (id) {
-            let url = `http://localhost:3000/close_prices/${id}`
-
-            axios.get(url)
+            getClosePrice(id)
             .then(res => {
+                console.log(res)
                 setClosePrice(res.data.value);
                 setSelectedSecurityId(res.data.security_id);
-                console.log(res);
+                setSecuritySymbol(res.data.security.symbol);
+                setDate(res.data.date);
             })
-            .catch(err => {
-                console.log('err');
-                console.log(err);
-            })
+            .catch(err => console.log(err))
 
             return;
         }
@@ -52,7 +57,14 @@ const RegisterClosePrice = () => {
     }, []);
 
     function handleSelectSecurity(event) {
-        setSelectedSecurityId(event.target.value);
+        setSelectedSecurity(event)
+        setSelectedSecurityId(event.value);
+
+        console.log('event.value');
+        console.log(event.value);
+        console.log('event');
+        console.log(event);
+        // setSelectedSecurityId(event.target.value);
         console.log(`Novo valor securityId: ${selectedSecurityId}`);
     }
 
@@ -61,7 +73,6 @@ const RegisterClosePrice = () => {
     }
 
     function onDateChange(event) {
-        // console.log(date);
         setDate(event.target.value)
     }
 
@@ -94,7 +105,6 @@ const RegisterClosePrice = () => {
             return;
         }
 
-        // let date = (new Date()).toISOString().split('T')[0];
         let body = {
             date,
             value: Number(closePrice),
@@ -121,27 +131,36 @@ const RegisterClosePrice = () => {
 
     return (
         <Container>
-            <h3></h3>
-            <TitleWithBackButton title='Registrar preço de fechamento' />
+            {/* <h3></h3> */}
+            <TitleWithBackButton 
+                title={id ? 'Editar preço de fechamento' : 'Registrar preço de fechamento'} 
+            />
             <br />
 
             <form onSubmit={handleSubmit}>
                 <h5>Selecione o ativo</h5>
                 { id ?
-                    <select value={selectedSecurityId} disabled={true}>
-                        <option value={`${selectedSecurityId}`}>{selectedSecurityId}</option>
-                    </select>
+                    <Form.Select value={selectedSecurityId} disabled={true}>
+                        {/* <option value={`${selectedSecurityId}`}>{selectedSecurityId}</option> */}
+                        <option value={`${selectedSecurityId}`}>{securitySymbol}</option>
+                    </Form.Select>
                     :
-                    <select value={selectedSecurityId} onChange={handleSelectSecurity}>
-                        {securitiesList.map(security => {
-                            return <option value={`${security.id}`}>{security.name}</option>
-                        })}
-                    </select>
+                    // fazer funcionar esse aqui depois;
+                    <Select 
+                        value={selectedSecurity} 
+                        onChange={handleSelectSecurity} 
+                        options={selectOptions}
+                    />
+                    // <select value={selectedSecurityId} onChange={handleSelectSecurity}>
+                    //     {securitiesList.map(security => {
+                    //         return <option value={`${security.id}`}>{security.symbol}</option>
+                    //     })}
+                    // </select>
                 }
                 <br />
 
                 <h5>Valor de fechamento</h5>
-                <input 
+                <Form.Control 
                     type="number" 
                     placeholder='0' 
                     value={closePrice}
@@ -151,16 +170,22 @@ const RegisterClosePrice = () => {
                 <br />
 
                 <h5>Data</h5>
-                <input value={date} onChange={onDateChange} type="date"></input><br />
+                <input value={date} onChange={onDateChange} type="date" disabled={id ? true : false}></input><br />
                 <br></br>
 
 
                 <Button type='submit'>Registrar valores</Button>  
             </form>
 
-            <p>ativo selecionado {selectedSecurityId}</p>
-
-            <Toast bg={toastVariant} className='fixed-top' onClose={() => setShow(false)} show={show} delay={3000} autohide>
+            {/* <p>ativo selecionado {selectedSecurityId}</p> */}
+            <div className="position-relative position-relative-example">
+            <Toast 
+                bg={toastVariant} 
+                className='position-absolute top-100 start-50 translate-middle' 
+                onClose={() => setShow(false)} 
+                show={show} 
+                delay={3000} autohide
+            >
                 <Toast.Header>
                     <img
                     src="holder.js/20x20?text=%20"
@@ -170,6 +195,7 @@ const RegisterClosePrice = () => {
                     <strong className="me-auto">{toastMessage}</strong>
                 </Toast.Header>
             </Toast>
+            </div>
         </Container>
     );
 }

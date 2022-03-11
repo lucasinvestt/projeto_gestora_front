@@ -10,5 +10,7 @@ import CashTransactions from './CashTransactions';
 import ClosePrices from './ClosePrices';
 import RegisterCashTransaction from './RegisterCashTransaction';
 import RegisterFund from './RegisterFund';
+import RegisterSecurity from './RegisterSecurity';
 
-export {Funds, HomePage, FundPage, Report, ClosePrices, RegisterFund, RegisterCashTransaction, SecuritiesList, CashTransactions, SecurityTransactions, RegisterSecurityTransaction, RegisterClosePrice};
+
+export {Funds, HomePage, FundPage, Report, RegisterSecurity, ClosePrices, RegisterFund, RegisterCashTransaction, SecuritiesList, CashTransactions, SecurityTransactions, RegisterSecurityTransaction, RegisterClosePrice};

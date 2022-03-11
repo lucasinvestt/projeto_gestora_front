@@ -150,12 +150,12 @@ const RegisterCashTransaction = () => {
                 }
 
                 <h5>Descrição</h5>
-                <input type="text" value={description} onChange={handleDescricaoChange}/>
+                <Form.Control type="text" value={description} onChange={handleDescricaoChange}/>
 
-                <br />
+                {/* <br /> */}
 
                 <h5>Valor</h5>
-                <input 
+                <Form.Control 
                     type="number" 
                     placeholder='0' 
                     value={value}
@@ -174,12 +174,13 @@ const RegisterCashTransaction = () => {
                 <br />
                  
 
-                <br /><br />
+                <br />
 
                 <Button type='submit'>Registrar operação</Button>  
             </form>
 
-            <Toast 
+            
+            {/* <Toast 
                 bg={toastVariant} 
                 className='fixed-top' 
                 onClose={() => setShow(false)} 
@@ -195,7 +196,30 @@ const RegisterCashTransaction = () => {
                     />
                     <strong className="me-auto">{toastMessage}</strong>
                 </Toast.Header>
-            </Toast>
+            </Toast> */}
+
+            <div className="position-relative position-relative-example">
+                {/* <div className="position-absolute top-50 start-100 translate-middle">zz</div> */}
+                {/* <div className="position-absolute top-100 start-50 translate-middle">zz</div> */}
+
+                <Toast 
+                    bg={toastVariant} 
+                    className='position-absolute top-100 start-50 translate-middle' 
+                    onClose={() => setShow(false)} 
+                    show={show} 
+                    delay={3000} 
+                    autohide
+                >
+                    <Toast.Header>
+                        <img
+                            src="holder.js/20x20?text=%20"
+                            className="rounded me-2"
+                            alt=""
+                        />
+                        <strong className="me-auto">{toastMessage}</strong>
+                    </Toast.Header>
+                </Toast>
+            </div>
 
         </Container>
     );

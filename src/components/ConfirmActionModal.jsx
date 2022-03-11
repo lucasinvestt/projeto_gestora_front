@@ -1,7 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Button, Container, Modal, Table } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const ConfirmActionModal = ({show, title, body, handleClose, confirmFunction}) => {
     const navigate = useNavigate();

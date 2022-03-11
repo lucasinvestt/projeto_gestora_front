@@ -16,6 +16,9 @@ const RegisterSecurityTransaction = () => {
     const [fundsList, setFundsList] = useState([]);
     const [securitiesList, setSecuritiesList] = useState([]);
 
+    const [fundName, setFundName] = useState("");
+    const [securitySymbol, setSecuritySymbol] = useState("");
+
     const {id} = useParams();
 
     const [date, setDate] = useState((new Date()).toISOString().split('T')[0]);
@@ -35,6 +38,13 @@ const RegisterSecurityTransaction = () => {
                 setSelectedSecurityId(res.data.security_id);
                 setUnitValue(res.data.unit_value);
                 setSecurityAmount(res.data.amount);
+
+                setFundName(res.data.fund.name);
+                setSecuritySymbol(res.data.security.symbol);
+
+                setDate(res.data.date)
+                // console.log('opa');
+                // console.log(res.data)
             })
 
             return;
@@ -151,27 +161,35 @@ const RegisterSecurityTransaction = () => {
             <TitleWithBackButton title={id !== undefined ? 'Editar transação de Ativo' : 'Registrar transação de Ativo'}></TitleWithBackButton>
 
             <form onSubmit={handleSubmit}>
-                <h5>Selecione o fundo</h5>
+                <h5>Selecione o Fundo</h5>
 
                 {id !== undefined ?
-                    <select value={selectedFundId} disabled={true}>  
-                        return <option value={`${selectedFundId}`}>{selectedFundId}</option>
-                    </select>
+                    // <select value={selectedFundId} disabled={true}>  
+                    //     return <option value={`${selectedFundId}`}>{selectedFundId}</option>
+                    // </select>
+                    <Form.Select value={selectedFundId} disabled={true}>  
+                        return <option value={`${selectedFundId}`}>{fundName}</option>
+                    </Form.Select>
+
                     :
-                    <select value={selectedFundId} onChange={handleSelectFund}>
+                    <Form.Select value={selectedFundId} onChange={handleSelectFund}>
                         {fundsList.map(fund => {
                             return <option value={`${fund.id}`}>{fund.name}</option>
                         })}
-                    </select>
+                    </Form.Select>
                 }
                 
 
-                <h5>Selecione o ativo</h5>
+                <h5>Selecione o Ativo</h5>
 
                 {id ?
-                    <select value={selectedSecurityId} disabled={true}>  
-                        return <option value={`${selectedSecurityId}`}>{selectedSecurityId}</option>
-                    </select>
+                    // <select value={selectedSecurityId} disabled={true}>  
+                    //     return <option value={`${selectedSecurityId}`}>{selectedSecurityId}</option>
+                    // </select>
+
+                    <Form.Select value={selectedSecurityId} disabled={true}>
+                        return <option value={`${selectedSecurityId}`}>{securitySymbol}</option>
+                    </Form.Select>
                     :
                     // <select value={selectedSecurityId} onChange={handleSelectSecurity}>
                     //     {securitiesList.map(security => {
@@ -193,16 +211,15 @@ const RegisterSecurityTransaction = () => {
                 <br />
 
                 <h5>Valor Unitário</h5>
-                <input 
+                <Form.Control 
                     type="number" 
                     placeholder='0' 
                     value={unitValue}
                     onChange={handleUnitValueChange}
-                    // Falta fazer
                 />
 
                 <h5>Quantidade</h5>
-                <input 
+                <Form.Control 
                     type="number" 
                     placeholder='0' 
                     value={securityAmount}

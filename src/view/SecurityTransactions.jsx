@@ -1,42 +1,36 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Button, Container, Table } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
+import { deleteSecurityTransaction, getAllSecurityTransactions, getAllSecurityTransactionsFromDate, getSecurityTransactionsFromFund } from '../api/api';
+import ConfirmActionModal from '../components/ConfirmActionModal';
 
 import TitleWithBackButton from '../components/TitleWithBackButton';
+import { getFormatedDate } from '../scripts/helper_scripts';
 
 const SecurityTransactions = () => {
     const [securityTransactions, setSecurityTransactions] = useState([])
-    const [date, setDate] = useState((new Date()).toISOString().split('T')[0]) //useState(new Date())
+    // const [date, setDate] = useState((new Date()).toISOString().split('T')[0]) //useState(new Date())
+    const [date, setDate] = useState(getFormatedDate(new Date())) //useState(new Date())
     const {id} = useParams();
     const filterDate = new Date(useParams().date);
-    const navigate = useNavigate();
 
     useEffect(() => {
+        let formatedFilterDate;
+
         if (filterDate != 'Invalid Date') {
-            setDate((new Date(filterDate)).toISOString().split('T')[0]);
+            formatedFilterDate = getFormatedDate(new Date(filterDate))
+            setDate(formatedFilterDate)
         }
 
-        let url; // = 'http://localhost:3000/security_transactions/';
-
-        if (id !== undefined) {
-            //trocar url e pegar só do id
-            url = `http://localhost:3000/funds/${id}/securities_transactions/${filterDate.toISOString().split('T')[0]}`; //conferir 
+        if (id !== undefined) { //list from fund
+            getSecurityTransactionsFromFund(id, formatedFilterDate)
+            .then(res => setSecurityTransactions(res.data)) 
         } else if (filterDate != 'Invalid Date') {
-            // console.log('opaaaaaaaaa, date não é inválido');
-            // console.log(filterDate);
-            url = `http://localhost:3000/security_transactions/${filterDate.toISOString().split('T')[0]}`;
-            //FALTA FAZER A ROTA NO RUBY
+            getAllSecurityTransactionsFromDate(formatedFilterDate)
+            .then(res => setSecurityTransactions(res.data))
         } else {
-            url = 'http://localhost:3000/security_transactions/';
+            getAllSecurityTransactions().then(res => setSecurityTransactions(res.data))
         }
-        
-        axios.get(url)
-        .then(res => {
-            console.log('security transactions');
-            console.log(res);
-            setSecurityTransactions(res.data);
-        })
 
     }, []);
 
@@ -57,11 +51,33 @@ const SecurityTransactions = () => {
     }
     
 
+    // modal =-=============================
+    const [show, setShow] = useState(false);
+    const [deleteItemId, setDeleteItemId] = useState(null);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    function confirmationModal(id) {
+        setShow(true);
+        setDeleteItemId(id);
+    }
+
+    function deleteItem(itemId) {
+        console.log(`Removing item ${itemId}...`);
+
+        deleteSecurityTransaction(itemId)
+        .then(res =>  console.log(`sucesso ao remover item ${itemId}`))
+        .catch(err => console.log(`falha ao remover item ${itemId}`));
+
+        setShow(false);
+    }
+    // modal =-=============================
+
     return (
         <Container>
             <TitleWithBackButton title='Transações de Ativos'></TitleWithBackButton>
-
-            <br />
+            
             <div className="input-group">
                 <input value={date} onChange={onDateChange} type="date"></input><br />
                 <div className="input-group-append">
@@ -95,13 +111,25 @@ const SecurityTransactions = () => {
                             <td>R$ {(item.amount*item.unit_value).toLocaleString('pt-br')}</td>
                             <td>{item.date.toLocaleString('pt-br')}</td>
                             <td>
-                                <Button className='me-2' onClick={() => goToEditSecurityTransactions(item.id)}>Editar</Button><span></span>
-                                <Button className='btn btn-danger'>Excluir</Button>
+                                <Button className='me-2' onClick={() => goToEditSecurityTransactions(item.id)}>
+                                    Editar
+                                </Button><span></span>
+                                <Button className='btn btn-danger' onClick={() => confirmationModal(item.id)}>
+                                    Excluir
+                                </Button>
                             </td>
                         </tr>
                     })}
                 </tbody>
             </Table>
+
+            <ConfirmActionModal
+                show={show}
+                title='Remover transação de ativo'
+                body='Tem certeza que deseja remover o item selecionado?'
+                handleClose={handleClose}
+                confirmFunction={() => deleteItem(deleteItemId)}
+            />
 
             <br />
         </Container>
