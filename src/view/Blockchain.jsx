@@ -56,7 +56,7 @@ const Blockchain = () => {
             daiWithSigner = await contract.connect(signer);
         }
         catch (err) {
-            console.log("providereeeeeee");
+            console.log("erro ao conectar carteira");
             console.log(provider)
         }
     }
@@ -118,7 +118,7 @@ const Blockchain = () => {
             // function addPlByDate(uint fundId, uint _date, uint _pl) external",
             await daiWithSigner.addPlByDate(fundId, date, pl);
         } catch (err) {
-            console.log('capiroto ta agindo');
+            console.log('erro ao registrar pl no fundo');
             console.log(err);
         }
     }

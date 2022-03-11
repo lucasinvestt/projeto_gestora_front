@@ -53,9 +53,6 @@ const FundPage = () => {
             const contract = new ethers.Contract(daiAddress, daiAbi, provider);
             const daiWithSigner = await contract.connect(signer)
             
-            // function addPlByDate(uint fundId, uint _date, uint _pl) external",
-
-            // alert(`${fundId}, ${date}, ${pl} `)
             await daiWithSigner.addPlByDate(fundId, date, parseInt(pl*100));
             alert("Dados salvos na Blockchain com sucesso!")
         } catch (err) {
@@ -67,8 +64,6 @@ const FundPage = () => {
     function getBlockchainFormatedDate(date) {
         return date.replaceAll('-', '');
     }
-
-    // alert(getBlockchainFormatedDate(date))
     /// Blockchain ------
     
     return (
@@ -91,13 +86,11 @@ const FundPage = () => {
                     <Button onClick={() => navigate(`/funds/${id}/security_transactions/${getFormatedDate(new Date())}`)}>
                         Transações de Ativos
                     </Button>
-                    {/* <Link to={`/funds/${id}/security_transactions/${getFormatedDate(new Date())}`}>Transações de Ativos</Link> */}
                 </Col>
                 <Col className='col-auto'>
                     <Button onClick={() => navigate(`/funds/${id}/cash_transactions/${getFormatedDate(new Date())}`)}>
                         Transações de Caixa
                     </Button>
-                    {/* <Link to={`/funds/${id}/cash_transactions/${getFormatedDate(new Date())}`}>Transações de Caixa</Link> */}
                 </Col>
                 <Col className='col-auto'>
                     <Button variant="warning" onClick={() => registerFundPl(id, getBlockchainFormatedDate(date), pl)}>
