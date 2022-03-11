@@ -134,19 +134,19 @@ const RegisterCashTransaction = () => {
 
             <TitleWithBackButton title={id ? 'Editar transação de Caixa' : 'Registrar transação de Caixa'} />
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-25'>
                 <h5>Selecione o fundo</h5>
 
                 { id !== undefined ?
-                    <select value={fundName} disabled={true}>  
+                    <Form.Select value={fundName} disabled={true}>  
                         return <option value={`${fundName}`}>{fundName}</option>
-                    </select>
+                    </Form.Select>
                     :
-                    <select value={selectedFundId} onChange={handleSelectFund}>
+                    <Form.Select value={selectedFundId} onChange={handleSelectFund}>
                         {fundsList.map(fund => {
                             return <option value={`${fund.id}`}>{fund.name}</option>
                         })}
-                    </select>
+                    </Form.Select>
                 }
 
                 <h5>Descrição</h5>
@@ -170,7 +170,7 @@ const RegisterCashTransaction = () => {
                 </Form.Group> */}
 
                 <h5>Data</h5>
-                <input value={date} onChange={onDateChange} type="date"></input>
+                <Form.Control value={date} onChange={onDateChange} type="date"/>
                 <br />
                  
 

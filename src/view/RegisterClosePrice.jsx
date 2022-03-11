@@ -137,7 +137,7 @@ const RegisterClosePrice = () => {
             />
             <br />
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-25'>
                 <h5>Selecione o ativo</h5>
                 { id ?
                     <Form.Select value={selectedSecurityId} disabled={true}>
@@ -170,7 +170,7 @@ const RegisterClosePrice = () => {
                 <br />
 
                 <h5>Data</h5>
-                <input value={date} onChange={onDateChange} type="date" disabled={id ? true : false}></input><br />
+                <Form.Control value={date} onChange={onDateChange} type="date" disabled={id ? true : false}/>
                 <br></br>
 
 

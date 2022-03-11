@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Table } from 'react-bootstrap';
+import { Button, Container, Form, Table } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import { deleteSecurityTransaction, getAllSecurityTransactions, getAllSecurityTransactionsFromDate, getSecurityTransactionsFromFund } from '../api/api';
+import { deleteSecurityTransaction, getAllSecurityTransactions, getAllSecurityTransactionsFromDate, getFundsList, getSecurityTransactionsFromFund } from '../api/api';
 import ConfirmActionModal from '../components/ConfirmActionModal';
 
 import TitleWithBackButton from '../components/TitleWithBackButton';
@@ -13,6 +13,11 @@ const SecurityTransactions = () => {
     const [date, setDate] = useState(getFormatedDate(new Date())) //useState(new Date())
     const {id} = useParams();
     const filterDate = new Date(useParams().date);
+
+    const [fundsList, setFundsList] = useState([]);
+    const [selectedFundId, setSelectedFundId] = useState(-1);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let formatedFilterDate;
@@ -31,6 +36,10 @@ const SecurityTransactions = () => {
         } else {
             getAllSecurityTransactions().then(res => setSecurityTransactions(res.data))
         }
+
+        if (id) setSelectedFundId(id);
+
+        getFundsList().then(res => { setFundsList(res.data) })
 
     }, []);
 
@@ -74,6 +83,21 @@ const SecurityTransactions = () => {
     }
     // modal =-=============================
 
+
+    function onSelectChange(event) {
+        setSelectedFundId(event.target.value);
+        navigateToFund(event.target.value);
+    }
+
+    function navigateToFund(fundId) {
+        // navigate(`/funds/${selectedFundId}/security_transactions/${date}`);
+        if (fundId == -1) {
+            window.location.href = `http://localhost:7090/security_transactions`
+            return;
+        }
+        window.location.href = `http://localhost:7090/funds/${fundId}/security_transactions/${date}`
+    }
+
     return (
         <Container>
             <TitleWithBackButton title='Transações de Ativos'></TitleWithBackButton>
@@ -83,6 +107,13 @@ const SecurityTransactions = () => {
                 <div className="input-group-append">
                     <button className="btn btn-outline-secondary" type="button" onClick={filterByDate}>Confirmar</button>
                 </div>
+
+                <Form.Select value={selectedFundId} onChange={onSelectChange} type='date'>
+                    <option value={-1}>Todos os fundos</option>
+                    {fundsList.map((fund,idx) => {
+                        return <option key={idx} value={`${fund.id}`}>{fund.name}</option>
+                    })}
+                </Form.Select>
             </div>
             <br />
 

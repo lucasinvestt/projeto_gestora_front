@@ -114,7 +114,7 @@ const RegisterSecurity = () => {
 
             <TitleWithBackButton title={id ? 'Editar ativo' : 'Registrar ativo'} />
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-25'>
                 <h5>Símbolo do ativo</h5>
                 <Form.Control type="text" value={symbol} onChange={handleSymbolChange}/>
                 <br />
@@ -122,7 +122,7 @@ const RegisterSecurity = () => {
                 <h5>Tipo do ativo</h5>
                 <Form.Control type="text" placeholder='' value={type} onChange={handleTypeChange} />
 
-                <br /><br />
+                <br />
 
                 <Button type='submit'>Registrar operação</Button>  
             </form>

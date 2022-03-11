@@ -115,3 +115,8 @@ export async function getFundBalance(fundId, date) {
 export async function getFundInfo(id) {
     return investTechApi.get(`/funds/${id}`);
 }
+
+
+export async function deleteFund(id) {
+    return investTechApi.delete(`/funds/${id}`);
+}

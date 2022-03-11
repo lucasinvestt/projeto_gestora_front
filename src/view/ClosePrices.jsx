@@ -64,7 +64,6 @@ const ClosePrices = () => {
         .then(res => {
             console.log(`sucesso ao remover item ${itemId}`)
             //colocar toast depois
-
         })
         .catch(err => {
             console.log(`falha ao remover item ${itemId}`)
@@ -93,24 +92,25 @@ const ClosePrices = () => {
 
             {
                 closePrices.length === 0 ?
-                <Row><Col><p>Nenhum preço de fechamento registrado para o dia selecionado</p></Col></Row>
+                <Row><Col><p className="text-secondary">
+                    Nenhum preço de fechamento registrado para o dia selecionado
+                    </p>
+                </Col></Row>
                 :
                 <Table className='table table-striped'>
                     <thead>
                         <tr>
                             <th>Ativo</th>
                             <th>Valor de Fechamento</th>
-                            <th>Data</th>
+                            {/* <th>Data</th> */}
                             <th>Gerenciar</th>
                         </tr>
                     </thead>
                     <tbody>
                         {closePrices.map( (item, idx) => {
                             return <tr key={idx}>
-                                {/* <td>{item.security_id}</td> */}
                                 <td>{item.security.symbol}</td>
                                 <td>R$ {item.value.toLocaleString('pt-br')}</td>
-                                <td>{item.date.toLocaleString('pt-br')}</td>
                                 <td>
                                     <Button className='me-2' onClick={() => goToEditClosePrice(item.id)}>Editar</Button><span></span>
                                     <Button onClick={() => confirmationModal(item.id)} className='btn btn-danger'>Excluir</Button>
@@ -119,7 +119,6 @@ const ClosePrices = () => {
                         })}
                     </tbody>
                 </Table>
-
             }
 
 

@@ -19,7 +19,6 @@ const CashTransactions = () => {
 
     useEffect(() => {
         if (filterDate != 'Invalid Date') {
-            // setDate((new Date(filterDate)).toISOString().split('T')[0]);
             setDate(getFormatedDate(new Date(filterDate)))
         }
 
@@ -29,13 +28,9 @@ const CashTransactions = () => {
         // console.log(`filterDate: ${filterDate}`);
 
         if (id !== undefined) {
-            //trocar url e pegar só do id
             url = `http://localhost:3000/funds/${id}/cash_transactions/${filterDate}`; //conferir 
         } else if (filterDate != 'Invalid Date') {
-            // console.log('opaaaaaaaaa, date não é inválido');
-            // console.log(filterDate);
-            url = `http://localhost:3000/cash_transactions/${filterDate.toISOString().split('T')[0]}`;
-            //FALTA FAZER A ROTA NO RUBY
+            url = `http://localhost:3000/cash_transactions/all/${getFormatedDate(filterDate)}`;
         }
         
         axios.get(url)
@@ -50,8 +45,6 @@ const CashTransactions = () => {
                 return 0;
             });
             setCashTransactions(data);
-
-
         })
 
     }, []);
@@ -73,7 +66,6 @@ const CashTransactions = () => {
     }
 
 
-
     // modal =-=============================
     const [show, setShow] = useState(false);
     const [deleteItemId, setDeleteItemId] = useState(null);
@@ -87,8 +79,6 @@ const CashTransactions = () => {
     }
 
     function deleteItem(itemId) {
-        // let url = `http://localhost:3000/cash_transactions/${itemId}`
-
         console.log(`Removing item ${itemId}...`);
 
         deleteCashTransaction(itemId)

@@ -4,6 +4,7 @@ import { Button, Container, Toast, Alert, Form } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import TitleWithBackButton from '../components/TitleWithBackButton';
 import Select from 'react-select'
+import { getFormatedDate } from '../scripts/helper_scripts';
 
 const RegisterSecurityTransaction = () => {
     const [selectedFundId, setSelectedFundId] = useState(-1);
@@ -21,7 +22,8 @@ const RegisterSecurityTransaction = () => {
 
     const {id} = useParams();
 
-    const [date, setDate] = useState((new Date()).toISOString().split('T')[0]);
+    // const [date, setDate] = useState((new Date()).toISOString().split('T')[0]);
+    const [date, setDate] = useState(getFormatedDate(new Date()));
 
     // toast
     const [show, setShow] = useState(false);
@@ -160,7 +162,7 @@ const RegisterSecurityTransaction = () => {
             {/* <h3>Registrar transação de Ativo</h3> */}
             <TitleWithBackButton title={id !== undefined ? 'Editar transação de Ativo' : 'Registrar transação de Ativo'}></TitleWithBackButton>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-25'>
                 <h5>Selecione o Fundo</h5>
 
                 {id !== undefined ?
@@ -230,7 +232,7 @@ const RegisterSecurityTransaction = () => {
 
                 
                 <h5>Data</h5>
-                <input value={date} onChange={onDateChange} type="date"></input><br />
+                <Form.Control value={date} onChange={onDateChange} type="date" /><br />
                 <br></br>
 
                 <Button type='submit'>Registrar transação</Button>  

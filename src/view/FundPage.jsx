@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Fade, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Fade, Form, Row, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Link } from "react-router-dom"
 import TitleWithBackButton from '../components/TitleWithBackButton';
+import { ethers } from "ethers";
 
 import { getFormatedDate } from '../scripts/helper_scripts';
-
 import { getCashTransactionsFromFund, getFundBalance, getFundInfo, getPL, getPortfolioWithClosePrices } from '../api/api';
 
 const FundPage = () => {
@@ -19,8 +18,6 @@ const FundPage = () => {
 
     let navigate = useNavigate();
 
-    const [fade, setFade] = useState(false);
-
     useEffect(() => {
         getFundInfo(id).then(res => setFundsInfo(res.data));
         getPortfolio();
@@ -31,43 +28,50 @@ const FundPage = () => {
         getFundBalance(id, date).then(res => setBalance(res.data[0].balance));
         getPL(id, date).then(res => setPl(res.data.pl));
         getCashTransactionsFromFund(id, date).then(res => setCashTransactions(res.data));
-        
-        // setFade(false);
-        // setFade(!fade).then(_ => setFade(!fade));
-        // setFade(!fade);
-        setFade(!fade);
-        setFade(!fade);
-        // setFade(false);
     }
-
-    useEffect(() => {
-        console.log(`entrou no useEffect. Fade = ${fade}`);
-        if (fade == true) return;
-        setFade(!fade);
-    }, [fade])
-
-
 
     function onDateChange(event) {
         setDate(event.target.value)
     }
 
+    //// Blockchain 
+    const daiAddress = "0x177bE3112C754b84e0fF2d71DdaF2D1002B1648F";
+    const daiAbi = [
+        "function registerFund(string memory name, uint id) public",
+        "function getFundName (uint id) public view returns (string memory _name)",
+        "function addPlByDate(uint fundId, uint _date, uint _pl) external",
+        "function getPl (uint fundId, uint _date) external view returns (uint _pl)",
+        "event FundCreated(string name, uint id)",
+        "event PlAdded(uint fundId, uint date, uint pl)"
+    ];
+
+    async function registerFundPl(fundId, date, pl) {
+        try {
+            let provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            let signer = provider.getSigner()
+            const contract = new ethers.Contract(daiAddress, daiAbi, provider);
+            const daiWithSigner = await contract.connect(signer)
+            
+            // function addPlByDate(uint fundId, uint _date, uint _pl) external",
+            await daiWithSigner.addPlByDate(fundId, date, pl);
+            alert("Dados salvos na Blockchain com sucesso!")
+        } catch (err) {
+            alert("Falha ao inserir os dados na Blockchain. Tente novamente")
+            console.log(err);
+        }
+    }
+    
+    function getBlockchainFormatedDate(date) {
+        return date.replaceAll('-', '');
+    }
+
+    // alert(getBlockchainFormatedDate(date))
+    /// Blockchain ------
+    
     return (
         <Container>
-            {/* <TitleWithBackButton title={fundsInfo.name}></TitleWithBackButton> */}
             <TitleWithBackButton title={'Portfolio'}></TitleWithBackButton>
-
-            {/* <div className='d-flex justify-content-center'>
-                <div>
-                    <Link to={`/funds/${id}/report/${getFormatedDate(new Date())}`}>Relatório</Link> <span> </span>
-                    <Link to={`/funds/${id}/security_transactions/${getFormatedDate(new Date())}`}>Transações de Ativos</Link> <span> </span>
-                    <Link to={`/funds/${id}/cash_transactions/${getFormatedDate(new Date())}`}>Transações de Caixa</Link> <span> </span>
-                </div>
-            </div> */}
-
-            {/* <br /> */}
- 
-            {/* <h2 className="text-center">Portifolio</h2> */}
             
             <br />
             <Row>
@@ -93,6 +97,12 @@ const FundPage = () => {
                     </Button>
                     {/* <Link to={`/funds/${id}/cash_transactions/${getFormatedDate(new Date())}`}>Transações de Caixa</Link> */}
                 </Col>
+                <Col className='col-auto'>
+                    <Button variant="warning" onClick={() => registerFundPl(id, getBlockchainFormatedDate(date), pl)}>
+                        Publicar na Blockchain
+                    </Button>
+                </Col>
+                
             </Row>
 
             <br />
@@ -106,11 +116,9 @@ const FundPage = () => {
             <br></br>
             <h3>Ativos</h3>
 
-            <Fade in={fade} appear={true}>
             <Table>
                 <thead>
                 <tr>
-                    {/* <th>Nome</th> */}
                     <th>Símbolo</th>
                     <th>Quantidade</th>
                     <th>Valor Unitário</th>
@@ -129,7 +137,6 @@ const FundPage = () => {
                     )}
                 </tbody>
             </Table>
-            </Fade>
 
             <br />
             <h3>Transações de Caixa</h3>
@@ -141,12 +148,22 @@ const FundPage = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    {cashTransactions.map((item, idx) => 
-                        <tr key={idx}>
-                            <td>{item.description}</td>
-                            <td>R$ {item.value.toLocaleString('pt-br')}</td>
-                        </tr>
-                    )}
+                    {
+                        cashTransactions.length === 0 ?
+                        <>
+                            <br />
+                            <p className="text-secondary">
+                                Nenhuma transação de caixa registrada no dia selecionado
+                            </p>
+                        </>
+                        :
+                        <>{cashTransactions.map((item, idx) => 
+                            <tr key={idx}>
+                                <td>{item.description}</td>
+                                <td>R$ {item.value.toLocaleString('pt-br')}</td>
+                            </tr>
+                        )}</>
+                    }             
                 </tbody>
             </Table>
 

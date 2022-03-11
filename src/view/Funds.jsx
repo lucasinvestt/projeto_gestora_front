@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Button, Container, Table } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { deleteFund } from '../api/api';
 import ConfirmActionModal from '../components/ConfirmActionModal';
 
 import TitleWithBackButton from '../components/TitleWithBackButton';
@@ -44,16 +45,20 @@ const Funds = () => {
     function deleteItem(itemId) {
         let url = `http://localhost:3000/funds/${itemId}`
 
-        axios.delete(url)
-        .then(res => {
-            console.log(`sucesso ao remover item ${itemId}`)
-            //colocar toast depois
+        deleteFund(itemId)
+        .then(res => {console.log(`sucesso ao remover item ${itemId}`)})
+        .catch(err => { console.log(`falha ao remover item ${itemId}`)})
 
-        })
-        .catch(err => {
-            console.log(`falha ao remover item ${itemId}`)
-            // colocar toast depois
-        })
+        // axios.delete(url)
+        // .then(res => {
+        //     console.log(`sucesso ao remover item ${itemId}`)
+        //     //colocar toast depois
+
+        // })
+        // .catch(err => {
+        //     console.log(`falha ao remover item ${itemId}`)
+        //     // colocar toast depois
+        // })
 
         console.log(`Removing item ${itemId}...`);
         
@@ -63,7 +68,6 @@ const Funds = () => {
 
     return (
         <Container>
-            {/* <h3>Lista de Fundos</h3> */}
             <TitleWithBackButton title='Lista de Fundos'></TitleWithBackButton>
 
             <br />

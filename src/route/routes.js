@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import { getFormatedDate } from "../scripts/helper_scripts"
 import {HomePage, Funds, FundPage, ClosePrices, RegisterFund, RegisterSecurity, RegisterCashTransaction, CashTransactions, SecuritiesList, SecurityTransactions, Report, RegisterSecurityTransaction, RegisterClosePrice} from "../view/"
 import Blockchain from "../view/Blockchain"
-import FadeTest from "../view/FadeTest"
 
 
 const getRoutes = () => (
@@ -15,6 +14,7 @@ const getRoutes = () => (
 
                 <Nav className="me-auto">
                 <Nav.Link href="/funds">Listar Fundos</Nav.Link>
+                {/* <Nav.Link href="/funds/1">Portifolio</Nav.Link> */}
 
                 <NavDropdown title="Transações" id="nav-dropdown">
                     <Nav.Link className='text-dark' href="/security_transactions/new">Cadastrar transação de Ativo</Nav.Link>
