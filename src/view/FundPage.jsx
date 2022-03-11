@@ -54,7 +54,9 @@ const FundPage = () => {
             const daiWithSigner = await contract.connect(signer)
             
             // function addPlByDate(uint fundId, uint _date, uint _pl) external",
-            await daiWithSigner.addPlByDate(fundId, date, pl);
+
+            // alert(`${fundId}, ${date}, ${pl} `)
+            await daiWithSigner.addPlByDate(fundId, date, parseInt(pl*100));
             alert("Dados salvos na Blockchain com sucesso!")
         } catch (err) {
             alert("Falha ao inserir os dados na Blockchain. Tente novamente")
